@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Circle } from "lucide-react";
 import ColorSlider from "../slider/color";
 import rgbToHex from "../../tools/rgb";
+import useIoT from "../../hooks/iot";
 
 export default function Main() {
   const [rgbValues, setRgbValues] = useState({
@@ -10,25 +11,35 @@ export default function Main() {
     green: 255,
     blue: 255,
   });
+  const { connected, publishRGBValues } = useIoT();
 
-  useEffect(() => {
-    const eventSource = new EventSource("/api/iot");
+  // useEffect(() => {
+  //   const eventSource = new EventSource("/api/iot");
 
-    eventSource.onmessage = (event) => {
-      const newMessage = JSON.parse(event.data);
-      console.log("newMessage", newMessage);
-      // setMessages((prevMessages) => [...prevMessages, newMessage]);
-    };
+  //   eventSource.onmessage = (event) => {
+  //     const newMessage = JSON.parse(event.data);
+  //     console.log("newMessage", newMessage);
+  //     // setMessages((prevMessages) => [...prevMessages, newMessage]);
+  //   };
 
-    eventSource.onerror = (err) => {
-      console.error("Error en SSE", err);
-      eventSource.close();
-    };
+  //   eventSource.onerror = (err) => {
+  //     console.error("Error en SSE", err);
+  //     eventSource.close();
+  //   };
 
-    return () => {
-      eventSource.close();
-    };
-  }, []);
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, []);
+
+  const handleRGBChange = (color, value) => {
+    setRgbValues((prevValues) => ({
+      ...prevValues,
+      [color]: value,
+    }));
+
+    publishRGBValues(rgbValues.red, rgbValues.green, rgbValues.blue);
+  };
 
   const ledColor = rgbToHex(rgbValues.red, rgbValues.green, rgbValues.blue);
 
@@ -46,19 +57,19 @@ export default function Main() {
         color="red"
         label="Red"
         rgbValues={rgbValues}
-        setRgbValues={setRgbValues}
+        setRgbValues={handleRGBChange}
       />
       <ColorSlider
         color="green"
         label="Green"
         rgbValues={rgbValues}
-        setRgbValues={setRgbValues}
+        setRgbValues={handleRGBChange}
       />
       <ColorSlider
         color="blue"
         label="Blue"
         rgbValues={rgbValues}
-        setRgbValues={setRgbValues}
+        setRgbValues={handleRGBChange}
       />
     </>
   );

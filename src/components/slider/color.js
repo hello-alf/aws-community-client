@@ -4,7 +4,7 @@ export default function ColorSlider(props) {
   const { color, label, rgbValues, setRgbValues } = props;
 
   const updateColor = (color, value) => {
-    setRgbValues((prev) => ({ ...prev, [color]: value }));
+    setRgbValues(color, value);
   };
 
   return (
@@ -27,10 +27,10 @@ export default function ColorSlider(props) {
         onChange={(e) => updateColor(color, Number(e.target.value))}
         className={`${
           color === "red"
-            ? "bg-red-200 w-full"
+            ? "bg-red-200 w-full cursor-pointer"
             : color === "green"
-            ? "bg-green-200 w-full"
-            : "bg-blue-200 w-full"
+            ? "bg-green-200 w-full cursor-pointer"
+            : "bg-blue-200 w-full cursor-pointer"
         }`}
       />
     </div>
